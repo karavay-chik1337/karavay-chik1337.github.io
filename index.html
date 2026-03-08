@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+
+<style>
+
+/* body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:#f2f2f7;
+  margin:0;
+  padding:20px;
+} */
+
+/* body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:#f2f2f7;
+  margin:0;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+
+  padding:10px;
+} */
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:#f2f2f7;
+  margin:0;
+
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+
+  min-height:100dvh;
+
+  padding:16px;
+  box-sizing:border-box;
+}
+
+/* .container{
+  width:100%;//////
+  max-width:420px;
+  margin:auto;
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+} */
+
+.container{
+  width:100%;
+  max-width:420px;
+  margin-top:20px;
+
+  background:white;
+  padding:24px;
+
+  border-radius:16px;
+
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+h2{
+  margin-top:0;
+  text-align:center;
+}
+
+select,input{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  font-size:16px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  box-sizing:border-box;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.saveBtn{
+  background:#34C759;
+  color:white;
+}
+
+.statsBtn{
+  background:#007AFF;
+  color:white;
+}
+
+#statsModal{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:white;
+  padding:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Что съел?</h2>
+
+<select id="product"></select>
+
+<input id="weight" type="number" placeholder="Вес (г)">
+
+<button class="saveBtn" onclick="save()">Сохранить</button>
+
+<button class="statsBtn" onclick="showStats()">Статистика</button>
+
+</div>
+
+<div id="statsModal">
+
+<h2>Статистика</h2>
+
+<div id="chart_div" style="width:100%; height:400px;"></div>
+
+<button onclick="closeStats()">Закрыть</button>
+
+</div>
+
+<script>
+
+function loadProducts(){
+
+  google.script.run.withSuccessHandler(function(products){
+
+    const select = document.getElementById("product");
+
+    select.innerHTML="";
+
+    products.forEach(p => {
+
+      const option=document.createElement("option");
+      option.value=p;
+      option.text=p;
+
+      select.appendChild(option);
+
+    });
+
+  }).getProducts();
+
+}
+
+
+function save(){
+
+  const product=document.getElementById("product").value;
+  const weight=document.getElementById("weight").value;
+
+  if(!weight){
+    alert("Введите вес");
+    return;
+  }
+
+  const data={
+    product:product,
+    weight:weight
+  }
+
+  google.script.run.withSuccessHandler(function(){
+
+    document.getElementById("weight").value="";
+    document.getElementById("product").selectedIndex=0;
+
+  }).saveData(data);
+
+}
+
+
+function showStats(){
+
+  document.getElementById("statsModal").style.display="block";
+
+  google.script.run.withSuccessHandler(drawChart).getStats();
+
+}
+
+
+function closeStats(){
+  document.getElementById("statsModal").style.display="none";
+}
+
+
+function drawChart(dataArray){
+
+  google.charts.load('current',{'packages':['corechart']});
+
+  google.charts.setOnLoadCallback(function(){
+
+    const data=google.visualization.arrayToDataTable(dataArray);
+
+    const options={
+      title:'Статистика продуктов',
+      chartArea:{width:'85%',height:'75%'}
+    };
+
+    const chart=new google.visualization.PieChart(
+      document.getElementById('chart_div')
+    );
+
+    chart.draw(data,options);
+
+  });
+
+}
+
+loadProducts();
+
+</script>
+
+</body>
+
+</html>
