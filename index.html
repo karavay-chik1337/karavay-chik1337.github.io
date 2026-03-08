@@ -127,7 +127,7 @@ button{
 
 <input id="weight" type="number" placeholder="Вес (г)">
 
-<button class="saveBtn" onclick="save()">Сохранить</button>
+<button class="saveBtn" onclick="send">Добавить</button>
 
 <button class="statsBtn" onclick="showStats()">Статистика</button>
 
@@ -144,6 +144,15 @@ button{
 </div>
 
 <script>
+
+async function loadData(){
+
+ const response = await fetch("APPS_SCRIPT_URL");
+ const data = await response.json();
+
+ console.log(data);
+
+}
 
 function loadProducts(){
 
@@ -193,6 +202,21 @@ function save(){
 }
 
 
+function send(){
+
+    fetch("ВСТАВЬ_ССЫЛКУ_APPS_SCRIPT",{
+    method:"POST",
+    body:JSON.stringify({
+    name:document.getElementById("name").value,
+    value:document.getElementById("value").value
+    })
+    })
+
+alert("Отправлено")
+
+}
+
+
 function showStats(){
 
   document.getElementById("statsModal").style.display="block";
@@ -206,29 +230,6 @@ function closeStats(){
   document.getElementById("statsModal").style.display="none";
 }
 
-
-function drawChart(dataArray){
-
-  google.charts.load('current',{'packages':['corechart']});
-
-  google.charts.setOnLoadCallback(function(){
-
-    const data=google.visualization.arrayToDataTable(dataArray);
-
-    const options={
-      title:'Статистика продуктов',
-      chartArea:{width:'85%',height:'75%'}
-    };
-
-    const chart=new google.visualization.PieChart(
-      document.getElementById('chart_div')
-    );
-
-    chart.draw(data,options);
-
-  });
-
-}
 
 loadProducts();
 
