@@ -1,216 +1,905 @@
+<!--<!DOCTYPE html>-->
+
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+<!--    <meta name="apple-mobile-web-app-capable" content="yes">-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Запись еды</title>-->
+<!--    <link rel="icon" href="assets/favicon.png" type="image/png">-->
+<!--    <link rel="apple-touch-icon" href="assets/favicon.png">-->
+<!--    <meta name="apple-mobile-web-app-title" content="Дневник питания">-->
+<!--    <script src="https://www.gstatic.com/charts/loader.js"></script>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;-->
+<!--            background: #f2f2f7;-->
+<!--            margin: 0;-->
+
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            align-items: flex-start;-->
+
+<!--            min-height: 100dvh;-->
+
+<!--            padding: 16px;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+
+<!--        .container {-->
+<!--            width: 100%;-->
+<!--            max-width: 420px;-->
+<!--            margin-top: 20px;-->
+
+<!--            background: white;-->
+<!--            padding: 24px;-->
+
+<!--            border-radius: 16px;-->
+
+<!--            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);-->
+<!--        }-->
+
+<!--        h2 {-->
+<!--            margin-top: 0;-->
+<!--            text-align: center;-->
+<!--        }-->
+
+<!--        select,-->
+<!--        input {-->
+<!--            width: 100%;-->
+<!--            padding: 14px;-->
+<!--            margin: 10px 0;-->
+<!--            font-size: 16px;-->
+<!--            border-radius: 10px;-->
+<!--            border: 1px solid #ddd;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+
+<!--        button {-->
+<!--            width: 100%;-->
+<!--            padding: 14px;-->
+<!--            margin-top: 10px;-->
+<!--            font-size: 16px;-->
+<!--            border: none;-->
+<!--            border-radius: 10px;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+
+<!--        .saveBtn {-->
+<!--            background: #34C759;-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .statsBtn {-->
+<!--            background: #007AFF;-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .sendBtn{-->
+<!--            background: fuchsia;-->
+<!--            color: white;-->
+<!--        }-->
+<!--        #statsModal {-->
+<!--            display: none;-->
+<!--            position: fixed;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            width: 100%;-->
+<!--            height: 100%;-->
+<!--            background: rgba(0, 0, 0, 0.5);-->
+<!--            /* полупрозрачный фон */-->
+<!--            justify-content: center;-->
+<!--            align-items: center;-->
+<!--            padding: 16px;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+
+<!--        #statsModal .modalContent {-->
+<!--            width: 100%;-->
+<!--            max-width: 420px;-->
+<!--            background: white;-->
+<!--            padding: 20px;-->
+<!--            border-radius: 16px;-->
+<!--            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);-->
+<!--            max-height: 90vh;-->
+<!--            overflow-y: auto;-->
+<!--            /* скролл, если много контента */-->
+<!--        }-->
+
+<!--        .weight-container {-->
+<!--            text-align: center;-->
+<!--            margin-top: 4px;-->
+<!--            margin-bottom: 12px;-->
+<!--        }-->
+
+<!--        .weight-container p {-->
+<!--            font-size: 0.85rem;-->
+<!--            color: #666; /* мягкий серый */-->
+<!--            display: block;-->
+<!--        }-->
+
+<!--        /* Контейнер для всех карточек */-->
+<!--        .nutrition-cards {-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            gap: 10px;-->
+<!--            margin: 15px 0;-->
+<!--            width: 100%;-->
+<!--        }-->
+
+<!--        /* Карточка калорий (оранжевая/красная) */-->
+<!--        .calorie-card {-->
+<!--            background: linear-gradient(135deg, #ff8a5c, #ff6b4a);-->
+<!--            border-radius: 20px;-->
+<!--            padding: 15px 20px;-->
+<!--            display: flex;-->
+<!--            align-items: baseline;-->
+<!--            justify-content: center;-->
+<!--            gap: 5px;-->
+<!--            box-shadow: 0 4px 15px rgba(255, 107, 74, 0.3);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .calorie-value {-->
+<!--            font-size: 32px;-->
+<!--            font-weight: bold;-->
+<!--            line-height: 1;-->
+<!--        }-->
+
+<!--        .calorie-unit {-->
+<!--            font-size: 18px;-->
+<!--            opacity: 0.9;-->
+<!--        }-->
+
+<!--        /* Карточка БЖУ (зеленоватая) */-->
+<!--        .macros-card {-->
+<!--            background: linear-gradient(135deg, #4ecdc4, #45b7af);-->
+<!--            border-radius: 20px;-->
+<!--            padding: 15px;-->
+<!--            display: flex;-->
+<!--            justify-content: space-around;-->
+<!--            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .macro-item {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            gap: 4px;-->
+<!--            font-size: 18px;-->
+<!--        }-->
+
+<!--        .macro-emoji {-->
+<!--            font-size: 20px;-->
+<!--            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));-->
+<!--        }-->
+
+<!--        .macro-value {-->
+<!--            font-weight: bold;-->
+<!--            font-size: 20px;-->
+<!--        }-->
+
+<!--        /* Адаптация для мобильных */-->
+<!--        @media (max-width: 400px) {-->
+<!--            .macro-item {-->
+<!--                font-size: 16px;-->
+<!--            }-->
+
+<!--            .macro-value {-->
+<!--                font-size: 18px;-->
+<!--            }-->
+
+<!--            .calorie-value {-->
+<!--                font-size: 28px;-->
+<!--            }-->
+<!--        }-->
+<!--    </style>-->
+
+<!--</head>-->
+
+<!--<body>-->
+<!--<div>-->
+<!--    <div class="container">-->
+<!--        <h2>Что съел?</h2>-->
+<!--        <select id="product"></select>-->
+<!--        <input id="weightFood" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Вес продукта/блюда (г)">-->
+
+<!--        <div class="nutrition-cards">-->
+<!--            &lt;!&ndash; Карточка с калориями &ndash;&gt;-->
+<!--            <div class="calorie-card">-->
+<!--                <span class="calorie-value" id="kcalValue">0</span>-->
+<!--                <span class="calorie-unit">ккал</span>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Карточка с БЖУ &ndash;&gt;-->
+<!--            <div class="macros-card">-->
+<!--                <div class="macro-item">-->
+<!--                    <span class="macro-emoji">🥩</span>-->
+<!--                    <span class="macro-value" id="proteinValue">0</span>-->
+<!--                </div>-->
+<!--                <div class="macro-item">-->
+<!--                    <span class="macro-emoji">🧈</span>-->
+<!--                    <span class="macro-value" id="fatValue">0</span>-->
+<!--                </div>-->
+<!--                <div class="macro-item">-->
+<!--                    <span class="macro-emoji">🍞</span>-->
+<!--                    <span class="macro-value" id="carbsValue">0</span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <button class="saveBtn" id="addBtn">Добавить</button>-->
+<!--        <button class="statsBtn" id="statsBtn">Статистика</button>-->
+<!--    </div>-->
+
+<!--    <div class="container">-->
+<!--        <div class="weight-container">-->
+<!--            <p>Ваш вес сейчас: <span id="currentWeight">—</span> кг</p>-->
+<!--        </div>-->
+<!--        <input id="weightHuman" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Если вес изменился, укажите его (кг)">-->
+<!--        <button class="sendBtn" id="setWeightBtn">Отправить</button>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div id="statsModal">-->
+<!--    <div class="modalContent">-->
+<!--        <h2>Статистика</h2>-->
+<!--        <div id="chart_div" style="width:100%; height:400px;"></div>-->
+<!--        <button id="closeBtn">Закрыть</button>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<script src="main.js"></script>-->
+<!--</body>-->
+
+<!--</html>-->
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+<!--    <meta name="apple-mobile-web-app-capable" content="yes">-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Запись еды</title>-->
+<!--    <link rel="icon" href="assets/favicon.png" type="image/png">-->
+<!--    <link rel="apple-touch-icon" href="assets/favicon.png">-->
+<!--    <meta name="apple-mobile-web-app-title" content="Дневник питания">-->
+<!--    <script src="https://www.gstatic.com/charts/loader.js"></script>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;-->
+<!--            background: #f2f2f7;-->
+<!--            margin: 0;-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            align-items: flex-start;-->
+<!--            min-height: 100dvh;-->
+<!--            padding: 12px;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+
+<!--        .container {-->
+<!--            width: 100%;-->
+<!--            max-width: 420px;-->
+<!--            background: white;-->
+<!--            padding: 20px;-->
+<!--            border-radius: 24px;-->
+<!--            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);-->
+<!--        }-->
+
+<!--        h2 {-->
+<!--            margin: 0 0 16px 0;-->
+<!--            font-size: 22px;-->
+<!--            font-weight: 600;-->
+<!--            text-align: center;-->
+<!--            color: #1c1c1e;-->
+<!--        }-->
+
+<!--        select, input {-->
+<!--            width: 100%;-->
+<!--            padding: 14px 16px;-->
+<!--            margin: 0 0 12px 0;-->
+<!--            font-size: 16px;-->
+<!--            border-radius: 14px;-->
+<!--            border: 1.5px solid #e5e5ea;-->
+<!--            background: #f9f9fc;-->
+<!--            box-sizing: border-box;-->
+<!--            transition: all 0.2s;-->
+<!--        }-->
+
+<!--        select:focus, input:focus {-->
+<!--            outline: none;-->
+<!--            border-color: #007AFF;-->
+<!--            background: white;-->
+<!--        }-->
+
+<!--        /* Кнопки в едином стиле */-->
+<!--        button {-->
+<!--            width: 100%;-->
+<!--            padding: 16px;-->
+<!--            margin-top: 8px;-->
+<!--            font-size: 16px;-->
+<!--            font-weight: 600;-->
+<!--            border: none;-->
+<!--            border-radius: 14px;-->
+<!--            cursor: pointer;-->
+<!--            transition: all 0.2s;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            gap: 8px;-->
+<!--            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);-->
+<!--        }-->
+
+<!--        button:active {-->
+<!--            transform: scale(0.98);-->
+<!--        }-->
+
+<!--        .saveBtn {-->
+<!--            background: #34C759;-->
+<!--            color: white;-->
+<!--            box-shadow: 0 8px 20px rgba(52, 199, 89, 0.3);-->
+<!--        }-->
+
+<!--        .statsBtn {-->
+<!--            background: #007AFF;-->
+<!--            color: white;-->
+<!--            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);-->
+<!--        }-->
+
+<!--        .sendBtn {-->
+<!--            background: #AF52DE;-->
+<!--            color: white;-->
+<!--            box-shadow: 0 8px 20px rgba(175, 82, 222, 0.3);-->
+<!--        }-->
+
+<!--        /* Разделитель между секциями */-->
+<!--        .divider {-->
+<!--            height: 1px;-->
+<!--            background: #e5e5ea;-->
+<!--            margin: 20px 0 16px 0;-->
+<!--        }-->
+
+<!--        /* Карточка веса — компактная и стильная */-->
+<!--        .weight-section {-->
+<!--            background: #f9f9fc;-->
+<!--            border-radius: 16px;-->
+<!--            padding: 16px;-->
+<!--            margin-top: 8px;-->
+<!--        }-->
+
+<!--        .weight-display {-->
+<!--            display: flex;-->
+<!--            align-items: baseline;-->
+<!--            justify-content: space-between;-->
+<!--            margin-bottom: 12px;-->
+<!--            font-size: 15px;-->
+<!--            color: #666;-->
+<!--        }-->
+
+<!--        .weight-display span {-->
+<!--            font-size: 24px;-->
+<!--            font-weight: 700;-->
+<!--            color: #1c1c1e;-->
+<!--        }-->
+
+<!--        .weight-input {-->
+<!--            display: flex;-->
+<!--            gap: 10px;-->
+<!--            align-items: center;-->
+<!--        }-->
+
+<!--        .weight-input input {-->
+<!--            flex: 1;-->
+<!--            margin: 0;-->
+<!--            padding: 12px 14px;-->
+<!--            font-size: 15px;-->
+<!--        }-->
+
+<!--        .weight-input button {-->
+<!--            width: auto;-->
+<!--            margin: 0;-->
+<!--            padding: 12px 20px;-->
+<!--            white-space: nowrap;-->
+<!--        }-->
+
+<!--        /* Карточки питания (без изменений, но чуть поджал отступы) */-->
+<!--        .nutrition-cards {-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            gap: 8px;-->
+<!--            margin: 16px 0;-->
+<!--            width: 100%;-->
+<!--        }-->
+
+<!--        .calorie-card {-->
+<!--            background: linear-gradient(135deg, #ff8a5c, #ff6b4a);-->
+<!--            border-radius: 20px;-->
+<!--            padding: 15px 20px;-->
+<!--            display: flex;-->
+<!--            align-items: baseline;-->
+<!--            justify-content: center;-->
+<!--            gap: 5px;-->
+<!--            box-shadow: 0 4px 15px rgba(255, 107, 74, 0.3);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .calorie-value {-->
+<!--            font-size: 32px;-->
+<!--            font-weight: bold;-->
+<!--            line-height: 1;-->
+<!--        }-->
+
+<!--        .calorie-unit {-->
+<!--            font-size: 18px;-->
+<!--            opacity: 0.9;-->
+<!--        }-->
+
+<!--        .macros-card {-->
+<!--            background: linear-gradient(135deg, #4ecdc4, #45b7af);-->
+<!--            border-radius: 20px;-->
+<!--            padding: 15px;-->
+<!--            display: flex;-->
+<!--            justify-content: space-around;-->
+<!--            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .macro-item {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            gap: 4px;-->
+<!--            font-size: 18px;-->
+<!--        }-->
+
+<!--        .macro-emoji {-->
+<!--            font-size: 20px;-->
+<!--            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));-->
+<!--        }-->
+
+<!--        .macro-value {-->
+<!--            font-weight: bold;-->
+<!--            font-size: 20px;-->
+<!--        }-->
+
+<!--        /* Модальное окно */-->
+<!--        #statsModal {-->
+<!--            display: none;-->
+<!--            position: fixed;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            width: 100%;-->
+<!--            height: 100%;-->
+<!--            background: rgba(0, 0, 0, 0.5);-->
+<!--            justify-content: center;-->
+<!--            align-items: center;-->
+<!--            padding: 16px;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+
+<!--        #statsModal .modalContent {-->
+<!--            width: 100%;-->
+<!--            max-width: 420px;-->
+<!--            background: white;-->
+<!--            padding: 24px;-->
+<!--            border-radius: 24px;-->
+<!--            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);-->
+<!--            max-height: 90vh;-->
+<!--            overflow-y: auto;-->
+<!--        }-->
+
+<!--        #closeBtn {-->
+<!--            background: #8e8e93;-->
+<!--            color: white;-->
+<!--            margin-top: 16px;-->
+<!--            box-shadow: none;-->
+<!--        }-->
+
+<!--        #closeBtn:active {-->
+<!--            background: #636366;-->
+<!--        }-->
+
+<!--        /* Адаптация для мобильных */-->
+<!--        @media (max-width: 400px) {-->
+<!--            .macro-item {-->
+<!--                font-size: 16px;-->
+<!--            }-->
+<!--            .macro-value {-->
+<!--                font-size: 18px;-->
+<!--            }-->
+<!--            .calorie-value {-->
+<!--                font-size: 28px;-->
+<!--            }-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--<div class="container">-->
+<!--    <h2>🍽 Что съел?</h2>-->
+
+<!--    <select id="product"></select>-->
+<!--    <input id="weightFood" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Вес продукта (г)">-->
+
+<!--    <div class="nutrition-cards">-->
+<!--        <div class="calorie-card">-->
+<!--            <span class="calorie-value" id="kcalValue">0</span>-->
+<!--            <span class="calorie-unit">ккал</span>-->
+<!--        </div>-->
+<!--        <div class="macros-card">-->
+<!--            <div class="macro-item">-->
+<!--                <span class="macro-emoji">🥩</span>-->
+<!--                <span class="macro-value" id="proteinValue">0</span>-->
+<!--            </div>-->
+<!--            <div class="macro-item">-->
+<!--                <span class="macro-emoji">🧈</span>-->
+<!--                <span class="macro-value" id="fatValue">0</span>-->
+<!--            </div>-->
+<!--            <div class="macro-item">-->
+<!--                <span class="macro-emoji">🍞</span>-->
+<!--                <span class="macro-value" id="carbsValue">0</span>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <button class="saveBtn" id="addBtn">-->
+<!--        <span>➕</span> Добавить запись-->
+<!--    </button>-->
+<!--    <button class="statsBtn" id="statsBtn">-->
+<!--        <span>📊</span> Статистика-->
+<!--    </button>-->
+
+<!--    <div class="divider"></div>-->
+
+<!--    &lt;!&ndash; Компактный блок веса &ndash;&gt;-->
+<!--    <div class="weight-section">-->
+<!--        <div class="weight-display">-->
+<!--            <span>Текущий вес</span>-->
+<!--            <span id="currentWeight">—</span>-->
+<!--        </div>-->
+<!--        <div class="weight-input">-->
+<!--            <input id="weightHuman" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Новый вес (кг)">-->
+<!--            <button class="sendBtn" id="setWeightBtn">💾</button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div id="statsModal">-->
+<!--    <div class="modalContent">-->
+<!--        <h2>📈 Статистика</h2>-->
+<!--        <div id="chart_div" style="width:100%; height:400px;"></div>-->
+<!--        <button id="closeBtn">Закрыть</button>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script src="main.js"></script>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
-
-<html>
-
+<html lang="ru">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <title>Запись еды</title>
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/favicon.png">
+    <meta name="apple-mobile-web-app-title" content="Дневник питания">
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+            background: #f2f2f7;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100dvh;
+            padding: 12px;
+            box-sizing: border-box;
+        }
 
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-      background: #f2f2f7;
-      margin: 0;
+        /* Основной контейнер для еды */
+        .food-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 16px;
+        }
 
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
+        /* Отдельный контейнер для веса */
+        .weight-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
 
-      min-height: 100dvh;
+        h2 {
+            margin: 0 0 16px 0;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+            color: #1c1c1e;
+        }
 
-      padding: 16px;
-      box-sizing: border-box;
-    }
+        select, input {
+            width: 100%;
+            padding: 14px 16px;
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            border-radius: 14px;
+            border: 1.5px solid #e5e5ea;
+            background: #f9f9fc;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
 
-    .container {
-      width: 100%;
-      max-width: 420px;
-      margin-top: 20px;
+        select:focus, input:focus {
+            outline: none;
+            border-color: #007AFF;
+            background: white;
+        }
 
-      background: white;
-      padding: 24px;
+        /* Стили для кнопок */
+        button {
+            width: 100%;
+            padding: 16px;
+            margin-top: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
 
-      border-radius: 16px;
+        button:active {
+            transform: scale(0.98);
+        }
 
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
+        .saveBtn {
+            background: #34C759;
+            color: white;
+            box-shadow: 0 8px 20px rgba(52, 199, 89, 0.3);
+        }
 
-    h2 {
-      margin-top: 0;
-      text-align: center;
-    }
+        .statsBtn {
+            background: #007AFF;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+        }
 
-    select,
-    input {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
+        .sendBtn {
+            background: #AF52DE;
+            color: white;
+            box-shadow: 0 8px 20px rgba(175, 82, 222, 0.3);
+        }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+        /* Карточки питания */
+        .nutrition-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 16px 0;
+            width: 100%;
+        }
 
-    .saveBtn {
-      background: #34C759;
-      color: white;
-    }
+        .calorie-card {
+            background: linear-gradient(135deg, #ff8a5c, #ff6b4a);
+            border-radius: 20px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 5px;
+            box-shadow: 0 4px 15px rgba(255, 107, 74, 0.3);
+            color: white;
+        }
 
-    .statsBtn {
-      background: #007AFF;
-      color: white;
-    }
+        .calorie-value {
+            font-size: 32px;
+            font-weight: bold;
+            line-height: 1;
+        }
 
-    #statsModal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      /* полупрозрачный фон */
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-      box-sizing: border-box;
-    }
+        .calorie-unit {
+            font-size: 18px;
+            opacity: 0.9;
+        }
 
-    #statsModal .modalContent {
-      width: 100%;
-      max-width: 420px;
-      background: white;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      max-height: 90vh;
-      overflow-y: auto;
-      /* скролл, если много контента */
-    }
-  </style>
+        .macros-card {
+            background: linear-gradient(135deg, #4ecdc4, #45b7af);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+            color: white;
+        }
 
+        .macro-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 18px;
+        }
+
+        .macro-emoji {
+            font-size: 20px;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+        }
+
+        .macro-value {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        /* Стили для блока веса */
+        .weight-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .weight-display p {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .weight-display span {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .weight-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .weight-input-group input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .weight-input-group button {
+            width: auto;
+            margin: 0;
+            padding: 14px 24px;
+            white-space: nowrap;
+        }
+
+        /* Модальное окно */
+        #statsModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        #statsModal .modalContent {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        #closeBtn {
+            background: #8e8e93;
+            color: white;
+            margin-top: 16px;
+            box-shadow: none;
+        }
+
+        #closeBtn:active {
+            background: #636366;
+        }
+
+        /* Адаптация */
+        @media (max-width: 400px) {
+            .macro-item {
+                font-size: 16px;
+            }
+            .macro-value {
+                font-size: 18px;
+            }
+            .calorie-value {
+                font-size: 28px;
+            }
+            .weight-display span {
+                font-size: 32px;
+            }
+        }
+    </style>
 </head>
 
 <body>
+<!-- Контейнер для еды -->
+<div class="food-container">
+    <h2>🍽 Что съел?</h2>
 
-  <div class="container">
-    <h2>Что съел?</h2>
     <select id="product"></select>
-    <input id="weight" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Вес (г)">
-    <button class="saveBtn" onclick="add()">Добавить</button>
-    <button class="statsBtn" onclick="showStats()">Статистика</button>
-  </div>
+    <input id="weightFood" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Вес продукта (г)">
 
-  <div id="statsModal">
-    <div class="modalContent">
-      <h2>Статистика</h2>
-      <div id="chart_div" style="width:100%; height:400px;"></div>
-      <button onclick="closeStats()">Закрыть</button>
+    <div class="nutrition-cards">
+        <div class="calorie-card">
+            <span class="calorie-value" id="kcalValue">0</span>
+            <span class="calorie-unit">ккал</span>
+        </div>
+        <div class="macros-card">
+            <div class="macro-item">
+                <span class="macro-emoji">🥩</span>
+                <span class="macro-value" id="proteinValue">0</span>
+            </div>
+            <div class="macro-item">
+                <span class="macro-emoji">🧈</span>
+                <span class="macro-value" id="fatValue">0</span>
+            </div>
+            <div class="macro-item">
+                <span class="macro-emoji">🍞</span>
+                <span class="macro-value" id="carbsValue">0</span>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    //загрузка библиотеки для диаграмм
-    google.charts.load('current', { 'packages': ['corechart'] });
+    <button class="saveBtn" id="addBtn">
+        <span>➕</span> Добавить запись
+    </button>
+    <button class="statsBtn" id="statsBtn">
+        <span>📊</span> Статистика
+    </button>
+</div>
 
-    //получение списка продуктов
-    async function loadProducts() {
+<!-- Отдельный контейнер для веса -->
+<div class="weight-container">
+    <h2>⚖️ Контроль веса</h2>
 
-      try {
-        // Получаем данные с Apps Script API
-        const response = await fetch("https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec?action=products");
-        const products = await response.json();
+    <div class="weight-display">
+        <p>Текущий вес</p>
+        <span id="currentWeight">—</span> <span style="font-size: 18px;">кг</span>
+    </div>
 
-        // Находим <select> на странице
-        const select = document.getElementById("product");
-        select.innerHTML = ""; // очищаем старые опции
+    <div class="weight-input-group">
+        <input id="weightHuman" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Новый вес (кг)">
+        <button class="sendBtn" id="setWeightBtn">💾</button>
+    </div>
+</div>
 
-        // Заполняем <select>
-        products.forEach(p => {
-          const option = document.createElement("option");
-          option.value = p;
-          option.text = p;
-          select.appendChild(option);
-        });
+<div id="statsModal">
+    <div class="modalContent">
+        <h2>📈 Статистика</h2>
+        <div id="chart_div" style="width:100%; height:400px;"></div>
+        <button id="closeBtn">Закрыть</button>
+    </div>
+</div>
 
-      } catch (error) {
-        console.error("Ошибка загрузки продуктов:", error);
-      }
-    }
-
-    //добавление еды
-    function add() {
-
-      const product = document.getElementById("product").value;
-      const weight = document.getElementById("weight").value;
-
-      if (!weight) {
-        alert("Введите вес");
-        return;
-      }
-
-      const data = {
-        product: product,
-        weight: weight
-      }
-      fetch("https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec", {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify(data)
-      });
-
-      document.getElementById("weight").value = "";
-    }
-
-    //показ статистики
-    async function showStats() {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec?action=stats")
-      const stats = await response.json();
-
-      document.getElementById("statsModal").style.display = "flex";
-      google.charts.setOnLoadCallback(() => drawChart(stats));
-    }
-
-    function closeStats() {
-      document.getElementById("statsModal").style.display = "none";
-    }
-
-    function drawChart(statsData) {
-           
-      const data = google.visualization.arrayToDataTable([
-        ['Дата', 'Нужно', 'Употреблено'],
-        ...statsData
-      ]);
-
-      const options = {
-        title: 'Тренд "Нужно" vs "Употреблено"',
-        width: '100%',
-        height: 400,
-        legend: { position: 'bottom' },
-        vAxis: { title: 'Калории' },
-        hAxis: { title: 'Дата' },
-        colors: ['#34C759', '#007AFF']
-      };
-
-      const chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-      chart.draw(data, options);
-    }
-
-    loadProducts();
-
-  </script>
-
+<script src="main.js"></script>
 </body>
-
 </html>
