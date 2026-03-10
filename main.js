@@ -82,11 +82,6 @@ async function showStats() {
     google.charts.setOnLoadCallback(() => drawChart(stats));
 }
 
-//закрыть окно статистики
-function closeStats() {
-    document.getElementById("statsModal").style.display = "none";
-}
-
 function drawChart(statsData) {
 
     const data = google.visualization.arrayToDataTable([
@@ -106,6 +101,11 @@ function drawChart(statsData) {
 
     const chart = new google.visualization.LineChart(document.getElementById('chart_div'));
     chart.draw(data, options);
+}
+
+//закрыть окно статистики
+function closeStats() {
+    document.getElementById("statsModal").style.display = "none";
 }
 
 async function updateKcalInfo() {
