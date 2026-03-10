@@ -1,7 +1,7 @@
 @import "preloader.css";
 @import "spinner.css";
 @import "toast.css";
-
+@import "selectItem.css";
 .content {
     display: none; /* Контент скрыт изначально */
     width: 100%;
@@ -76,7 +76,7 @@ button {
     font-size: 16px;
     font-weight: 600;
     border: none;
-    border-radius: 14px;
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
@@ -91,13 +91,13 @@ button:active {
 }
 
 .saveBtn {
-    background: linear-gradient(135deg, #66ea6d, #025a31);
+    background: linear-gradient(135deg, #97c8ff, #00bed1);
     color: white;
     box-shadow: 0 8px 20px rgba(52, 199, 89, 0.3);
 }
 
 .statsBtn {
-    background: linear-gradient(135deg, #043a7a, #5874f3);
+    background: linear-gradient(135deg, #8eea72, #5c854e);
     color: white;
     box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
 }
@@ -113,12 +113,12 @@ button:active {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin: 16px 0;
+    margin: 10px 0;
     width: 100%;
 }
 
 .calorie-card {
-    background: linear-gradient(135deg, #ff8a5c, #fb3a0a);
+    background: linear-gradient(135deg, #ec8544, #e3965c);
     border-radius: 20px;
     padding: 15px 20px;
     display: flex;
@@ -130,7 +130,7 @@ button:active {
 }
 
 .calorie-value {
-    font-size: 32px;
+    font-size: 22px;
     font-weight: bold;
     line-height: 1;
 }
@@ -181,6 +181,7 @@ button:active {
 .weight-display p {
     margin: 0 0 8px 0;
     font-size: 16px;
+    font-weight: 600;
     opacity: 0.9;
 }
 

@@ -3,14 +3,14 @@ google.charts.load('current', {'packages': ['corechart']});
 
 // Данные для статистики
 let cachedStats = null;
-
+let cachedStatsTime = null;
 // Привязка функций кнопкам
 document.getElementById("addBtn").addEventListener("click", addFood);
 document.getElementById("setWeightBtn").addEventListener("click", setWeight)
 document.getElementById("statsBtn").addEventListener("click", showStats);
 document.getElementById("closeBtn").addEventListener("click", closeStats);
 
-function showToast(message, type="success") {
+function showToast(message, type = "success") {
 
     const toast = document.getElementById("toast");
     const text = document.getElementById("toastText");
@@ -20,9 +20,9 @@ function showToast(message, type="success") {
 
     toast.className = "toast show " + type;
 
-    if(type === "success") icon.textContent = "✔️";
-    if(type === "error") icon.textContent = "❌";
-    if(type === "warning") icon.textContent = "⚠️";
+    if (type === "success") icon.textContent = "✔️";
+    if (type === "error") icon.textContent = "❌";
+    if (type === "warning") icon.textContent = "⚠️";
 
     setTimeout(() => {
         toast.classList.remove("show");
@@ -40,7 +40,7 @@ function addFood() {
         return;
     }
 
-    if(weight < 1 || weight > 5000){
+    if (weight < 1 || weight > 5000) {
         showToast("Вес не реалистичен", "error");
         return;
     }
@@ -70,7 +70,7 @@ function setWeight() {
         return;
     }
 
-    if(weight < 30 || weight > 300){
+    if (weight < 30 || weight > 300) {
         showToast("Вес не реалистичен", "error");
         return;
     }
@@ -116,7 +116,8 @@ function drawChart(statsData) {
 
 // Показ статистики
 function showStats() {
-    if (cachedStats) {
+    cachedStatsTime = localStorage.getItem('cachedStatsTime');
+    if (Date.now() - cachedStatsTime < 86400000) {
         document.getElementById("statsModal").style.display = "flex";
         google.charts.setOnLoadCallback(() => drawChart(cachedStats));
     } else {
@@ -135,47 +136,57 @@ function closeStats() {
 }
 
 // Заполнение списка продуктов
-function fillProductSelect(products) {
-    const select = document.getElementById("product");// Находим <select> на странице
-    select.innerHTML = "";// очищаем старые опции
+function fillProductAndFoodSelect(data) {
+    const selectProduct = document.getElementById("product");// Находим <select> на странице
+    const selectFood = document.getElementById("food");
+    selectProduct.innerHTML = "";// очищаем старые опции
+    selectFood.innerHTML = "";
 
-    // Заполняем <select>
-    products.forEach(p => {
+    // Заполняем <select
+    data.products.forEach(p => {
         const option = document.createElement("option");
         option.value = p;
         option.text = p;
-        select.appendChild(option);
+        selectProduct.appendChild(option);
     });
+
+    data.foods.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p;
+        option.text = p;
+        selectFood.appendChild(option);
+    });
+
 }
 
 // Получение списка продуктов
 async function loadProducts() {
 
     try {
-        const cached = localStorage.getItem('cachedProducts');
-        const cachedTime = localStorage.getItem('cachedProductsTime');
+        const cached = localStorage.getItem('cachedProductAndFood');
+        const cachedTime = localStorage.getItem('cachedProductAndFoodTime');
 
         // Если кэш свежий (меньше часа), используем его
         if (cached && cachedTime && (Date.now() - cachedTime < 3600000)) {
             const products = JSON.parse(cached);
-            fillProductSelect(products);
+            fillProductAndFoodSelect(products);
             return;
         }
 
         const response = await fetch("https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec?action=products");
-        const products = await response.json();
+        const data = await response.json();
+        console.log(data);
+        localStorage.setItem('cachedProductAndFood', JSON.stringify(data));
+        localStorage.setItem('cachedProductAndFoodTime', Date.now());
 
-        localStorage.setItem('cachedProducts', JSON.stringify(products));
-        localStorage.setItem('cachedProductsTime', Date.now());
-
-        fillProductSelect(products);
+        fillProductAndFoodSelect(data);
 
     } catch (error) {
         console.error("Ошибка загрузки продуктов:", error);
         // Используем старый кэш если есть
-        const cached = localStorage.getItem('cachedProducts');
+        const cached = localStorage.getItem('cachedProductAndFood');
         if (cached) {
-            fillProductSelect(JSON.parse(cached));
+            fillProductAndFoodSelect(JSON.parse(cached));
         }
     }
 }
@@ -211,26 +222,29 @@ async function getWeight() {
 async function loadStats() {
     try {
         // Проверяем кэш
-        const cached = localStorage.getItem('cachedStats');
-        const cachedTime = localStorage.getItem('cachedStatsTime');
+        // const cached = localStorage.getItem('cachedStats');
+        // const cachedTime = localStorage.getItem('cachedStatsTime');
+
+        cachedStats = localStorage.getItem('cachedStats');
+        cachedStatsTime = localStorage.getItem('cachedStatsTime');
 
         // Если кэш свежий (меньше 24 часов = 86400000 мс), используем его
-        if (cached && cachedTime && (Date.now() - cachedTime < 86400000)) {
-            cachedStats = JSON.parse(cached);
+        if (cachedStats && (Date.now() - cachedStatsTime < 86400000)) {
+            //cachedStats = JSON.parse(cached);
             console.log('Stats загружены из кэша');
-            return cachedStats;
+            //return cachedStats;
+        } else {
+            // Иначе грузим с сервера
+            console.log('Загружаем свежие stats с сервера');
+            const response = await fetch("https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec?action=stats");
+            const data = await response.json();
+
+            // Сохраняем в кэш
+            localStorage.setItem('cachedStats', JSON.stringify(data));
+            localStorage.setItem('cachedStatsTime', Date.now());
+
+            cachedStats = data;
         }
-
-        // Иначе грузим с сервера
-        console.log('Загружаем свежие stats с сервера');
-        const response = await fetch("https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec?action=stats");
-        const data = await response.json();
-
-        // Сохраняем в кэш
-        localStorage.setItem('cachedStats', JSON.stringify(data));
-        localStorage.setItem('cachedStatsTime', Date.now());
-
-        cachedStats = data;
 
     } catch (error) {
         console.error('Ошибка загрузки stats:', error);
@@ -273,3 +287,25 @@ async function initializeApp() {
 }
 
 initializeApp();
+
+
+function showSelect(type, btnElement) {
+    // Скрываем оба селекта
+    document.getElementById('food').style.display = 'none';
+    document.getElementById('product').style.display = 'none';
+
+    // Убираем active класс у всех кнопок
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Добавляем active класс нажатой кнопке
+    btnElement.classList.add('active');
+
+    // Показываем нужный селект
+    if (type === 'food') {
+        document.getElementById('food').style.display = 'block';
+    } else if (type === 'product') {
+        document.getElementById('product').style.display = 'block';
+    }
+}
