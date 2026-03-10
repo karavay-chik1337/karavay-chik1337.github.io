@@ -1,0 +1,59 @@
+.spinner {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.spinner div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    animation: spin 2s ease-in-out infinite;
+}
+
+.spinner div:nth-child(1) {
+    border: 4px solid #fb3a0a;  /* Красный - калории */
+    border-top-color: transparent;
+    animation-delay: -0.5s;
+}
+
+.spinner div:nth-child(2) {
+    border: 4px solid #4ecdc4;  /* Голубой - белки */
+    border-right-color: transparent;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    animation-delay: -1s;
+}
+
+.spinner div:nth-child(3) {
+    border: 4px solid #AF52DE;  /* Фиолетовый - жиры */
+    border-bottom-color: transparent;
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+    animation-delay: -1.5s;
+}
+
+.spinner div:nth-child(4) {
+    border: 4px solid #34c759;  /* Зеленый - углеводы */
+    border-left-color: transparent;
+    width: 40%;
+    height: 40%;
+    top: 30%;
+    left: 30%;
+    animation-delay: -2s;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
