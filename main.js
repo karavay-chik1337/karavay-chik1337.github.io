@@ -135,47 +135,57 @@ function closeStats() {
 }
 
 // Заполнение списка продуктов
-function fillProductSelect(products) {
-    const select = document.getElementById("product");// Находим <select> на странице
-    select.innerHTML = "";// очищаем старые опции
+function fillProductAndFoodSelect(data) {
+    const selectProduct = document.getElementById("product");// Находим <select> на странице
+    const selectFood = document.getElementById("food");
+    selectProduct.innerHTML = "";// очищаем старые опции
+    selectFood.innerHTML = "";
 
-    // Заполняем <select>
-    products.forEach(p => {
+    // Заполняем <select
+    data.products.forEach(p => {
         const option = document.createElement("option");
         option.value = p;
         option.text = p;
-        select.appendChild(option);
+        selectProduct.appendChild(option);
     });
+
+    data.foods.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p;
+        option.text = p;
+        selectFood.appendChild(option);
+    });
+
 }
 
 // Получение списка продуктов
 async function loadProducts() {
 
     try {
-        const cached = localStorage.getItem('cachedProducts');
-        const cachedTime = localStorage.getItem('cachedProductsTime');
+        const cached = localStorage.getItem('cachedProductAndFood');
+        const cachedTime = localStorage.getItem('cachedProductAndFoodTime');
 
         // Если кэш свежий (меньше часа), используем его
         if (cached && cachedTime && (Date.now() - cachedTime < 3600000)) {
             const products = JSON.parse(cached);
-            fillProductSelect(products);
+            fillProductAndFoodSelect(products);
             return;
         }
 
         const response = await fetch("https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec?action=products");
-        const products = await response.json();
+        const data = await response.json();
+        console.log(data);
+        localStorage.setItem('cachedProductAndFood', JSON.stringify(data));
+        localStorage.setItem('cachedProductAndFoodTime', Date.now());
 
-        localStorage.setItem('cachedProducts', JSON.stringify(products));
-        localStorage.setItem('cachedProductsTime', Date.now());
-
-        fillProductSelect(products);
+        fillProductAndFoodSelect(data);
 
     } catch (error) {
         console.error("Ошибка загрузки продуктов:", error);
         // Используем старый кэш если есть
-        const cached = localStorage.getItem('cachedProducts');
+        const cached = localStorage.getItem('cachedProductAndFood');
         if (cached) {
-            fillProductSelect(JSON.parse(cached));
+            fillProductAndFoodSelect(JSON.parse(cached));
         }
     }
 }
@@ -273,3 +283,25 @@ async function initializeApp() {
 }
 
 initializeApp();
+
+
+function showSelect(type, btnElement) {
+    // Скрываем оба селекта
+    document.getElementById('food').style.display = 'none';
+    document.getElementById('product').style.display = 'none';
+
+    // Убираем active класс у всех кнопок
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Добавляем active класс нажатой кнопке
+    btnElement.classList.add('active');
+
+    // Показываем нужный селект
+    if (type === 'food') {
+        document.getElementById('food').style.display = 'block';
+    } else if (type === 'product') {
+        document.getElementById('product').style.display = 'block';
+    }
+}

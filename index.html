@@ -27,10 +27,21 @@
 <!--Основной контент-->
 <div class="content" id="content">
     <div class="food-container">
-        <h2>🥘 Что съел?</h2>
+        <h2>🍽️ Что съел?</h2>
 
-        <select id="product"></select>
-        <input id="weightFood" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Вес продукта (г)">
+        <div style="display: flex; gap: 20px; margin-bottom: 16px; width: 100%;" class="button-group">
+            <button class="type-btn active" onclick="showSelect('food', this)">
+                <span>🍲 Блюдо</span>
+            </button>
+            <button class="type-btn" onclick="showSelect('product', this)">
+                <span>🥫 Продукт</span>
+            </button>
+        </div>
+
+        <select id="food" style="display: block;"></select>
+        <select id="product" style="display: none;"></select>
+        <!--inputmode="numeric"-->
+        <input id="weightFood" type="number" placeholder="Вес продукта (г)">
 
         <button class="saveBtn" id="addBtn">
             Записать еду <span>📝</span>
@@ -38,8 +49,8 @@
 
         <div class="nutrition-cards">
             <div class="calorie-card">
+                <span class="calorie-unit">🔥</span>
                 <span class="calorie-value" id="kcalValue">0</span>
-                <span class="calorie-unit">ккал</span>
             </div>
             <div class="macros-card">
                 <div class="macro-item">
@@ -92,6 +103,19 @@
 </div>
 
 <script src="main.js">
+    function switchType(btn) {
+
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const container = document.querySelector('.type-switch');
+
+        if (btn.textContent === "Продукт") {
+            container.classList.add("product");
+        } else {
+            container.classList.remove("product");
+        }
+    }
 
 </script>
 </body>
