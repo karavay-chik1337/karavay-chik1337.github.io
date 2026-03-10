@@ -116,18 +116,12 @@ function drawChart(statsData) {
 
 // Показ статистики
 function showStats() {
-    cachedStatsTime = localStorage.getItem('cachedStatsTime');
-    if (Date.now() - cachedStatsTime < 86400000) {
-        document.getElementById("statsModal").style.display = "flex";
-        google.charts.setOnLoadCallback(() => drawChart(cachedStats));
-    } else {
-        loadStats().then(() => {
-            if (cachedStats) {
-                document.getElementById("statsModal").style.display = "flex";
-                google.charts.setOnLoadCallback(() => drawChart(cachedStats));
-            } else console.log("Не удалось загрузить данные для статистики")
-        });
-    }
+    loadStats().then(() => {
+        if (cachedStats) {
+            document.getElementById("statsModal").style.display = "flex";
+            google.charts.setOnLoadCallback(() => drawChart(cachedStats));
+        } else console.log("Не удалось загрузить данные для статистики")
+    });
 }
 
 // Закрыть окно статистики
@@ -221,18 +215,12 @@ async function getWeight() {
 // Загрузка данных для статистики
 async function loadStats() {
     try {
-        // Проверяем кэш
-        // const cached = localStorage.getItem('cachedStats');
-        // const cachedTime = localStorage.getItem('cachedStatsTime');
-
-        cachedStats = localStorage.getItem('cachedStats');
-        cachedStatsTime = localStorage.getItem('cachedStatsTime');
+        cachedStats = JSON.parse(localStorage.getItem('cachedStats'));
+        cachedStatsTime = Number(localStorage.getItem('cachedStatsTime'));
 
         // Если кэш свежий (меньше 24 часов = 86400000 мс), используем его
-        if (cachedStats && (Date.now() - cachedStatsTime < 86400000)) {
-            //cachedStats = JSON.parse(cached);
+        if (cachedStats && cachedStatsTime && Date.now() - cachedStatsTime < 86400000) {
             console.log('Stats загружены из кэша');
-            //return cachedStats;
         } else {
             // Иначе грузим с сервера
             console.log('Загружаем свежие stats с сервера');
@@ -249,12 +237,10 @@ async function loadStats() {
     } catch (error) {
         console.error('Ошибка загрузки stats:', error);
 
-        // При ошибке пробуем использовать старый кэш (даже если просрочен)
         const oldCache = localStorage.getItem('cachedStats');
         if (oldCache) {
             console.log('Используем старый кэш stats из-за ошибки');
             cachedStats = JSON.parse(oldCache);
-            return cachedStats;
         }
     }
 }
