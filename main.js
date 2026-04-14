@@ -31,32 +31,46 @@ function showToast(message, type = "success") {
 
 // Добавление еды
 function addFood() {
+    let item;
+    let weight = null;
 
-    const product = document.getElementById("product").value;
-    const weight = document.getElementById("weightFood").value;
+    const productSelect = document.getElementById("product");
+    const foodSelect = document.getElementById("food");
 
-    if (!weight) {
-        showToast("Введите вес", "warning");
-        return;
+    if (productSelect.offsetParent) {
+        // выбран продукт
+        item = productSelect.value;
+        weight = Number(document.getElementById("weightFood").value);
+
+        if (!weight) {
+            showToast("Введите вес", "warning");
+            return;
+        }
+
+        if (weight < 1 || weight > 5000) {
+            showToast("Вес не реалистичен", "error");
+            return;
+        }
+
+        document.getElementById("weightFood").value = "";
+    } else {
+        // выбрано блюдо
+        item = foodSelect.value;
     }
 
-    if (weight < 1 || weight > 5000) {
-        showToast("Вес не реалистичен", "error");
-        return;
-    }
 
     const data = {
-        product: product,
+        item: item,
         weight: weight
     }
-    fetch("https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec?action=addFood", {
+
+    fetch("https://script.google.com/macros/s/AKfycbyO9pkgjCIx3hV7_ZpBlu5E7i6NfO0Gl9WuB-8vqNkF4TadG81tOlHm7Jp8LnR6NPqSdA/exec?action=addItem", {
         method: "POST",
         mode: "no-cors",
         body: JSON.stringify(data)
     });
 
-    document.getElementById("weightFood").value = "";
-    showToast("Продукт добавлен");
+    showToast("Записано");
 
     loadKPFCInfo();
 }
@@ -194,7 +208,7 @@ async function loadKPFCInfo() {
         document.getElementById('kcalValue').textContent = data.calories;
         document.getElementById('proteinValue').textContent = data.protein;
         document.getElementById('fatValue').textContent = data.fats;
-        document.getElementById('carbsValue').textContent = data.carbs;
+        document.getElementById('carbsValue').textContent = parseFloat(data.carbs);
 
     } catch (error) {
         console.error("Ошибка загрузки КБЖУ:", error);
@@ -291,7 +305,9 @@ function showSelect(type, btnElement) {
     // Показываем нужный селект
     if (type === 'food') {
         document.getElementById('food').style.display = 'block';
+        document.getElementById('weightFood').style.display = 'none';
     } else if (type === 'product') {
         document.getElementById('product').style.display = 'block';
+        document.getElementById('weightFood').style.display = 'block';
     }
 }
